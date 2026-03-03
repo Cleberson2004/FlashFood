@@ -1,0 +1,15 @@
+.container{
+    width: 100%;
+    height: 1080px;
+    background-color: black;
+}
+.loginContainer{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    margin: auto;
+    width: 50%;
+    height: 400px;
+    background-color: aqua;
+}
