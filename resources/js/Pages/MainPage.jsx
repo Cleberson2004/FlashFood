@@ -41,7 +41,7 @@ export default function MainPage({ items = [] }) {
               {items.length} {items.length === 1 ? "item cadastrado" : "itens cadastrados"}
             </p>
           </div>
-          <a href="/create" className="btn btn-primary">+ Novo Item</a>
+          <Link href="/newProduct" className="btn btn-primary">+ Novo Item</Link>
         </div>
 
         {/* Tabs */}
@@ -68,7 +68,7 @@ export default function MainPage({ items = [] }) {
             <div style={{ fontSize: "2.5rem", opacity: 0.4 }} className="mb-3">📭</div>
             <h5 className="fw-semibold text-dark">Nenhum item ainda</h5>
             <p className="small">Crie seu primeiro item para começar</p>
-            <Link href="/create" className="btn btn-primary mt-2">Criar Primeiro Item</Link>
+            <Link href="/newProduct" className="btn btn-primary mt-2">Criar Primeiro Item</Link>
           </div>
         ) : (
           <div className="row g-3">
@@ -102,7 +102,7 @@ export default function MainPage({ items = [] }) {
 
 function ItemCard({ item, onEdit, onDelete }) {
   return (
-    <div className="card h-100 shadow-sm border">
+    <div className="card h-1 00 shadow-sm border">
       <div className="card-body">
         <div className="d-flex justify-content-between align-items-start mb-2">
           <h6 className="card-title fw-semibold mb-0">{item.title}</h6>

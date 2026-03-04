@@ -16,7 +16,7 @@ export default function LoginPage() {
     
   function handleSubmit(e){
     e.preventDefault();
-    post("/loginSubmit", data);
+    post("/loginSubmit");
   }
 
   return (
@@ -30,10 +30,10 @@ export default function LoginPage() {
           <p className="text-muted" style={{ fontSize: "0.875rem" }}>Acesse sua conta para continuar</p>
         </div>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} noValidate>
           <div className="mb-3">
             <label className="form-label">E-mail</label>
-            <input type="email" value= {data.email}  onChange={(e) => onChange={(e) => setData("email", e.target.value)}} className="form-control" placeholder="voce@exemplo.com" />
+            <input type="email" value= {data.email}  onChange={(e) => setData("email", e.target.value)} className="form-control" placeholder="voce@exemplo.com" />
              {errors.email && (
               <div className="text-danger">{errors.email}</div>
             )}
@@ -44,7 +44,10 @@ export default function LoginPage() {
               <label className="form-label">Senha</label>
               <a href="#" className="text-primary" style={{ fontSize: "0.78rem" }}>Esqueceu a senha?</a>
             </div>
-            <input type="password" value= {data.password}  onChange={(e) => setData({ ...data, password: e.target.value })} className="form-control" placeholder="••••••••" />
+            <input type="password" value= {data.password}  onChange={(e) => setData("password", e.target.value)} className="form-control" placeholder="Ex. 123" />
+            {errors.password && (
+              <div className="text-danger">{errors.password}</div>
+            )}
           </div>
 
           <button type="submit" className="btn btn-primary w-100 mb-3">Entrar →</button>
@@ -61,9 +64,11 @@ export default function LoginPage() {
             Entrar com Google
           </button>
         </form>
-
+            {errors.loginError && (
+              <div className="alert alert-danger text-center mt-2" role="alert">{errors.loginError}</div>
+            )}
         <p className="text-center text-muted mt-3" style={{ fontSize: "0.8rem" }}>
-          Não tem conta? <a href="/cadastro" className="text-primary">Criar conta grátis</a>
+          Não tem conta? <Link href='/cadastro'>Cadastrar-se</Link>
         </p>
       </div>
     </div>

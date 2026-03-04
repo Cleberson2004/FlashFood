@@ -1,5 +1,5 @@
 // resources/js/Pages/CreatePage.jsx
-import { useForm, usePage } from "@inertiajs/react";
+import { useForm, usePage, Link } from "@inertiajs/react";
 import Header from "../Components/Header";
 import Footer from "../Components/Footer";
 
@@ -101,9 +101,9 @@ export default function CreatePage({ item }) {
 
                 {/* Rodapé */}
                 <div className="card-footer bg-light border-top d-flex justify-content-end gap-2 py-3 px-4">
-                  <a href="/main" className="btn btn-secondary">
+                  <Link href="/" className="btn btn-secondary">
                     Cancelar
-                  </a>
+                  </Link>
                   <button type="submit" className="btn btn-primary" disabled={processing}>
                     {processing ? (
                       <>

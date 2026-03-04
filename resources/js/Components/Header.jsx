@@ -7,25 +7,25 @@ export default function Header({ user }) {
 
   const handleLogout = () => {
    return(
-    <Link href="/login"></Link>
+    <Link href="/logout"></Link>
    )
   };
 
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm px-4">
-      <Link href="/main" className="navbar-brand fw-bold text-primary">
+      <a href="/" className="navbar-brand fw-bold text-primary">
         Home
-      </Link>
+      </a>
 
       <div className="collapse navbar-collapse">
         <ul className="navbar-nav me-auto">
           <li className="nav-item">
-            <Link href="/main" className={`nav-link ${isActive("/main") ? "active fw-semibold" : ""}`}>
+            <Link href="/" className={`nav-link ${isActive("/") ? "active fw-semibold" : ""}`}>
               Itens
             </Link>
           </li>
           <li className="nav-item">
-            <Link href="/create" className={`nav-link ${isActive("/create") ? "active fw-semibold" : ""}`}>
+            <Link href="/newProduct" className={`nav-link ${isActive("/newProduct") ? "active fw-semibold" : ""}`}>
               Criar
             </Link>
           </li>
@@ -42,7 +42,7 @@ export default function Header({ user }) {
             </div>
           )}
           <button className="btn btn-outline-secondary btn-sm" onClick={handleLogout}>
-            <Link href="/login">Sair</Link>
+            <Link href="/logout">Sair</Link>
           </button>
         </div>
       </div>

@@ -7,10 +7,7 @@ use Inertia\Inertia;
 
 class ItemController extends Controller
 {
-    public function index()
-    {
-        return Inertia::render('MainPage');
-    }
+
 
     public function create()
     {
