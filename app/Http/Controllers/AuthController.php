@@ -31,7 +31,7 @@ class AuthController extends Controller
         //return Inertia::render('MainPage');
 
         //get users
-
+    
         $user = User::where('email', $username)
             ->where('deleted_at', NULL)
             ->first();

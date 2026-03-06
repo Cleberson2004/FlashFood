@@ -8,19 +8,17 @@ export default function CreatePage({ item }) {
   const isEdit = !!item;
   const MAX_DESC = 300;
 
-  const { data, setData, post, put, processing, errors } = useForm({
-    title: item?.title ?? "",
-    description: item?.description ?? "",
-  });
+const { data, setData, post, put, processing, errors } = useForm({
+  product_id: item?.id ?? null,
+  name: item?.name ?? "",
+  description: item?.description ?? "",
+  price: item?.price ?? "",
+});
 
-  const handleSubmit = (e) => {
+function handleSubmit(e) {
     e.preventDefault();
-    if (isEdit) {
-      put();
-    } else {
-      post();
-    }
-  };
+    post("/createProduct");
+}
 
   return (
     <div className="d-flex flex-column min-vh-100 bg-light">
@@ -67,14 +65,14 @@ export default function CreatePage({ item }) {
                     </label>
                     <input
                       type="text"
-                      className={`form-control ${errors.title ? "is-invalid" : ""}`}
+                      className={`form-control ${errors.name ? "is-invalid" : ""}`}
                       placeholder="Digite um título descritivo..."
-                      value={data.title}
+                      value={data.name}
                       maxLength={80}
-                      onChange={(e) => setData("title", e.target.value)}
+                      onChange={(e) => setData("name", e.target.value)}
                     />
-                    {errors.title && (
-                      <div className="invalid-feedback">{errors.title}</div>
+                    {errors.name && (
+                      <div className="invalid-feedback">{errors.name}</div>
                     )}
                   </div>
 
@@ -96,8 +94,24 @@ export default function CreatePage({ item }) {
                       </div>
                     )}
                   </div>
+                  <div>
+                    <label className="form-label fw-semibold">Preço</label>
+                    <textarea
+                      className={`form-control ${errors.price ? "is-invalid" : ""}`}
+                      placeholder="Informe o preço do produto..."
+                      value={data.price}
+                      rows={5}
+                      min="0"
+                      step="0.01"
+                      onChange={(e) => setData("price", e.target.value)}
+                    />
+                    {errors.name && (
+                      <div className="invalid-feedback">{errors.price}</div>
+                    )}
+                  </div>
 
                 </div>
+                
 
                 {/* Rodapé */}
                 <div className="card-footer bg-light border-top d-flex justify-content-end gap-2 py-3 px-4">

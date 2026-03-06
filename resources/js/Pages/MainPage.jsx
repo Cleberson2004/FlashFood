@@ -1,5 +1,4 @@
-// resources/js/Pages/MainPage.jsx
-import { useState } from "react";
+import { useState, useEffect } from "react"; // 👈 useEffect adicionado
 import { router, usePage, Link } from "@inertiajs/react";
 import Header from "../Components/Header";
 import Footer from "../Components/Footer";
@@ -7,11 +6,19 @@ import DeleteModal from "../Components/DeleteModal";
 import Toast from "../Components/Toast";
 
 export default function MainPage({ items = [] }) {
+  
   const { auth, flash } = usePage().props;
 
   const [tab, setTab] = useState("all");
   const [deleteTarget, setDeleteTarget] = useState(null);
-  const [toast, setToast] = useState(flash?.success ? { message: flash.success, icon: "✅" } : null);
+  const [toast, setToast] = useState(null);
+
+
+  useEffect(() => {
+    if (flash?.success) {
+      showToast(flash.success, "✅");
+    }
+  }, [flash?.success]);
 
   const showToast = (message, icon = "✅") => {
     setToast({ message, icon });
@@ -19,7 +26,7 @@ export default function MainPage({ items = [] }) {
   };
 
   const handleDeleteConfirm = (item) => {
-    router.delete("", {
+    router.delete("/deleteProduct", {
       preserveScroll: true,
       onSuccess: () => {
         setDeleteTarget(null);
@@ -27,13 +34,16 @@ export default function MainPage({ items = [] }) {
       },
     });
   };
+  const handleEdit = (item) => {
+      router.visit(`/createProduct/${item.id}`); // 👈 mesmo caminho, mas GET
+  }
 
   return (
     <div className="d-flex flex-column min-vh-100 bg-light">
+      
       <Header user={auth?.user} />
 
       <main className="container py-4 flex-grow-1">
-        {/* Cabeçalho da página */}
         <div className="d-flex justify-content-between align-items-center mb-4">
           <div>
             <h1 className="h3 fw-bold mb-1">Seus Itens</h1>
@@ -73,10 +83,10 @@ export default function MainPage({ items = [] }) {
         ) : (
           <div className="row g-3">
             {items.map((item) => (
-              <div className="col-sm-6 col-lg-4" key={item.id}>
+              <div className="col-sm-6 col-lg-4" key={item.product_id}>
                 <ItemCard
                   item={item}
-                  onEdit={() => ""}
+                  onEdit={() => handleEdit(item)}
                   onDelete={() => setDeleteTarget(item)}
                 />
               </div>
@@ -90,7 +100,7 @@ export default function MainPage({ items = [] }) {
       {deleteTarget && (
         <DeleteModal
           item={deleteTarget}
-          onConfirm={handleDeleteConfirm}
+          onConfirm={() => handleDeleteConfirm(deleteTarget)}
           onCancel={() => setDeleteTarget(null)}
         />
       )}
@@ -102,15 +112,29 @@ export default function MainPage({ items = [] }) {
 
 function ItemCard({ item, onEdit, onDelete }) {
   return (
-    <div className="card h-1 00 shadow-sm border">
+    <div className="card h-100 shadow-sm border"> {/* 👈 h-1 00 → h-100 corrigido */}
       <div className="card-body">
         <div className="d-flex justify-content-between align-items-start mb-2">
-          <h6 className="card-title fw-semibold mb-0">{item.title}</h6>
-          <span className="badge bg-secondary text-white">#{String(item.id).padStart(3, "0")}</span>
+          <h6 className="card-title fw-semibold mb-0">{item.name}</h6> {/* 👈 title → name */}
+          <span className="badge bg-secondary text-white">#{String(item.product_id).padStart(3, "0")}</span>
         </div>
         <p className="card-text text-muted small">
           {item.description || <em>Sem descrição</em>}
         </p>
+         <p className="card-text text-muted small">
+          {new Date(item.created_at).toLocaleDateString('pt-BR', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+          })}
+        </p>
+         {item.price && (
+          <span className="fw-semibold text-success">
+            R$ {Number(item.price).toFixed(2)}
+          </span>
+        )}
       </div>
       <div className="card-footer bg-white border-top d-flex justify-content-end gap-2">
         <button className="btn btn-outline-secondary btn-sm" title="Editar" onClick={onEdit}>

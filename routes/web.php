@@ -19,5 +19,8 @@ Route::middleware([CheckIsNotLogged::class])->group(function(){
 Route::middleware([CheckIsLogged::class])->group(function(){
     Route::get('/', [MainController::class, 'index'])->name('home');
     Route::get('/newProduct', [MainController::class, 'newProduct']);
+    Route::get('/createProduct/{id}', [MainController::class, 'editProduct']);
+    Route::post('/createProduct', [MainController::class , 'createProduct']);
+    Route::delete('/deleteProduct', [MainController::class , 'deleteProduct']);
     Route::get('/logout', [AuthController::class, 'logout']);
 });
