@@ -56,8 +56,8 @@ export default function DeleteModal({ item, onConfirm, onCancel }) {
               </div>
 
               <p className="text-muted small mb-0">
-                Tem certeza que deseja excluir{" "}
-                <strong className="text-danger">"{item.title}"</strong>?{" "}
+                Tem certeza que deseja excluir{""}
+                <strong className="text-danger">"{item.name}"</strong>?{" "}
                 Todos os dados associados serão perdidos.
               </p>
             </div>

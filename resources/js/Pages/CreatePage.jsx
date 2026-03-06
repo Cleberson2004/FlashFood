@@ -9,7 +9,7 @@ export default function CreatePage({ item }) {
   const MAX_DESC = 300;
 
 const { data, setData, post, put, processing, errors } = useForm({
-  product_id: item?.id ?? null,
+  product_id: item?.product_id ?? null,
   name: item?.name ?? "",
   description: item?.description ?? "",
   price: item?.price ?? "",
@@ -96,7 +96,7 @@ function handleSubmit(e) {
                   </div>
                   <div>
                     <label className="form-label fw-semibold">Preço</label>
-                    <textarea
+                    <input
                       className={`form-control ${errors.price ? "is-invalid" : ""}`}
                       placeholder="Informe o preço do produto..."
                       value={data.price}
@@ -105,7 +105,7 @@ function handleSubmit(e) {
                       step="0.01"
                       onChange={(e) => setData("price", e.target.value)}
                     />
-                    {errors.name && (
+                    {errors.price && (
                       <div className="invalid-feedback">{errors.price}</div>
                     )}
                   </div>

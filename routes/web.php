@@ -3,6 +3,7 @@
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\MainController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ProductController;
 use App\Http\Middleware\CheckIsLogged;
 use App\Http\Middleware\CheckIsNotLogged;
 use Illuminate\Support\Facades\Route;
@@ -17,10 +18,11 @@ Route::middleware([CheckIsNotLogged::class])->group(function(){
 });
 
 Route::middleware([CheckIsLogged::class])->group(function(){
-    Route::get('/', [MainController::class, 'index'])->name('home');
-    Route::get('/newProduct', [MainController::class, 'newProduct']);
-    Route::get('/createProduct/{id}', [MainController::class, 'editProduct']);
-    Route::post('/createProduct', [MainController::class , 'createProduct']);
-    Route::delete('/deleteProduct', [MainController::class , 'deleteProduct']);
+    Route::get('/', [ProductController::class, 'index'])->name('home');
+    Route::get('/newProduct', [ProductController::class, 'newProduct']);
+    Route::get('/createProduct/{id}', [ProductController::class, 'editProduct']);
+    Route::post('/createProduct', [ProductController::class , 'createProduct']);
+    Route::delete('/deleteProduct/{id}', [ProductController::class , 'deleteProduct']);
+    Route::get('/pedido', [ProductController::class, 'shop']);
     Route::get('/logout', [AuthController::class, 'logout']);
 });

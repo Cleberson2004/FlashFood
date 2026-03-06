@@ -26,7 +26,7 @@ export default function MainPage({ items = [] }) {
   };
 
   const handleDeleteConfirm = (item) => {
-    router.delete("/deleteProduct", {
+    router.delete(`/deleteProduct/${item.product_id}`, {
       preserveScroll: true,
       onSuccess: () => {
         setDeleteTarget(null);
@@ -35,7 +35,8 @@ export default function MainPage({ items = [] }) {
     });
   };
   const handleEdit = (item) => {
-      router.visit(`/createProduct/${item.id}`); // 👈 mesmo caminho, mas GET
+    console.log(item);
+      router.get(`/createProduct/${item.product_id}`);
   }
 
   return (
@@ -54,7 +55,7 @@ export default function MainPage({ items = [] }) {
           <Link href="/newProduct" className="btn btn-primary">+ Novo Item</Link>
         </div>
 
-        {/* Tabs */}
+        {/* Tabs
         <ul className="nav nav-tabs mb-4">
           {[
             { key: "all", label: "Todos" },
@@ -70,7 +71,7 @@ export default function MainPage({ items = [] }) {
               </button>
             </li>
           ))}
-        </ul>
+        </ul> */}
 
         {/* Lista */}
         {items.length === 0 ? (

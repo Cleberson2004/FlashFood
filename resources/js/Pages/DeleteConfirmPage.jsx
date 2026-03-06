@@ -20,7 +20,7 @@ export default function DeleteConfirmPage({ item }) {
 
   const handleConfirm = () => {
     setLoading(true);
-    router.delete(route("items.destroy", item.id), {
+    router.delete(route("items.destroy", item.product_id), {
       onSuccess: () => setConfirmed(true),
       onFinish: () => setLoading(false),
     });
