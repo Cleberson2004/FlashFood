@@ -26,10 +26,10 @@ const paymentLabel = (method) => {
 
 const statusLabel = (status) => {
   switch (Number(status)) {
-    case 1: return { label: "Confirmado", color: "success" };
+    case 1: return { label: "Confirmado", color: "secondary" };
     case 2: return { label: "Em preparo", color: "warning" };
     case 3: return { label: "Saiu para entrega",   color: "primary" };
-    case 4: return { label: "Entregue",   color: "secondary" };
+    case 4: return { label: "Entregue",   color: "dark" };
 
     default: return { label: "Pendente",  color: "secondary" };
   }

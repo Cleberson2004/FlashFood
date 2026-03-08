@@ -30,7 +30,7 @@ class OrderController extends Controller
             ]);
         }
 
-        return redirect('/');
+        return redirect('/pedidos');
     }   
     public function getOrders(Request $request){
         $user = session('user');
