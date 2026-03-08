@@ -1,59 +1,209 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+<div align="center">
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+# Flash Food
 
-## About Laravel
+Sistema de pedidos online inspirado em plataformas de delivery.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+![Laravel](https://img.shields.io/badge/Laravel-Framework-red?style=for-the-badge\&logo=laravel)
+![React](https://img.shields.io/badge/React-Frontend-blue?style=for-the-badge\&logo=react)
+![Inertia](https://img.shields.io/badge/Inertia.js-Adapter-purple?style=for-the-badge)
+![MySQL](https://img.shields.io/badge/MySQL-Database-blue?style=for-the-badge\&logo=mysql)
+![Status](https://img.shields.io/badge/status-em%20desenvolvimento-yellow?style=for-the-badge)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+</div>
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## Sobre o projeto
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+Flash Food é uma aplicação web inspirada em plataformas de delivery.
+O sistema simula o fluxo completo de um pedido online, permitindo que usuários visualizem produtos, adicionem itens ao carrinho, realizem pedidos e acompanhem o status da entrega.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Além disso, existe um painel administrativo onde é possível gerenciar produtos e controlar o andamento dos pedidos.
 
-## Laravel Sponsors
+O projeto foi desenvolvido como parte do meu portfólio para demonstrar a criação de uma aplicação web completa utilizando **Laravel no backend e React no frontend**.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+---
 
-### Premium Partners
+# Preview da aplicação
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+## Cardápio
 
-## Contributing
+![Cardápio](screenshots/ListaCardapio.png)
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Interface onde o cliente pode visualizar os produtos disponíveis e adicioná-los ao carrinho.
 
-## Code of Conduct
+---
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## Resumo do pedido
 
-## Security Vulnerabilities
+![Resumo do Pedido](screenshots/ResumoPagamento.png)
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Tela responsável pela finalização do pedido e seleção da forma de pagamento.
 
-## License
+---
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## Histórico de pedidos
+
+![Meus Pedidos](screenshots/MeusPedidos.png)
+
+O cliente pode acompanhar todos os pedidos realizados e verificar o status atual.
+
+---
+
+## Gestão administrativa de pedidos
+
+![Gestão de Pedidos](screenshots/GestaodePedidos.png)
+
+Painel administrativo onde é possível visualizar e atualizar o status dos pedidos.
+
+Fluxo de status:
+
+Confirmado
+Em preparo
+Saiu para entrega
+Entregue
+
+---
+
+## Gerenciamento de itens
+
+![Itens](screenshots/TeladeItens.png)
+
+Tela administrativa para criação, edição e remoção de produtos.
+
+---
+
+# Tecnologias utilizadas
+
+## Backend
+
+* Laravel
+* Eloquent ORM
+
+## Frontend
+
+* React
+* Inertia.js
+* Vite
+
+## Banco de dados
+
+* MySQL
+
+---
+
+# Funcionalidades
+
+## Cliente
+
+* Criação de conta
+* Login de usuário
+* Listagem de produtos
+* Busca de produtos
+* Adição de itens ao carrinho
+* Seleção de forma de pagamento
+* Criação de pedidos
+* Visualização do status do pedido
+* Histórico de pedidos
+
+## Administração
+
+* Cadastro de produtos
+* Edição de produtos
+* Remoção de produtos
+* Visualização de pedidos
+* Atualização do status dos pedidos
+
+---
+
+# Fluxo do sistema
+
+1. O usuário cria uma conta ou realiza login
+2. O usuário visualiza os produtos disponíveis
+3. Produtos podem ser adicionados ao carrinho
+4. O pedido é finalizado com seleção da forma de pagamento
+5. O pedido é registrado no sistema
+6. O administrador atualiza o status do pedido
+7. O usuário acompanha o andamento diretamente na aplicação
+
+---
+
+# Estrutura do banco de dados
+
+Principais entidades do sistema:
+
+```
+Users
+Products
+Orders
+```
+
+Relacionamentos principais:
+
+* Um usuário pode possuir vários pedidos
+* Um pedido possui vários itens
+* Cada item de pedido pertence a um produto
+
+---
+
+# Instalação do projeto
+
+Clone o repositório
+
+```
+git clone https://github.com/Cleberson2004/FlashFood.git
+```
+
+Acesse o diretório do projeto
+
+```
+cd FlashFood
+```
+
+Instale as dependências do backend
+
+```
+composer install
+```
+
+Instale as dependências do frontend
+
+```
+npm install
+```
+
+Configure o arquivo `.env`
+
+```
+cp .env.example .env
+```
+
+Execute as migrations
+
+```
+php artisan migrate
+```
+
+Inicie o servidor
+
+```
+php artisan serve
+npm run dev
+```
+
+---
+
+# Melhorias futuras
+
+* Dashboard administrativo com métricas de pedidos
+* Sistema de categorias de produtos
+* Upload de imagens para produtos
+* Sistema de avaliações
+* Atualizações de pedidos em tempo real
+
+---
+
+# Autor
+
+Cleberson Ribeiro
