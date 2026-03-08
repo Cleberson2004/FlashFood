@@ -1,5 +1,8 @@
-import { useState, useEffect } from "react"; // 👈 useEffect adicionado
+import { useState, useEffect } from "react"; 
 import { router, usePage, Link } from "@inertiajs/react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus, faTrash, faPencil, faPen } from "@fortawesome/free-solid-svg-icons";
+import CreateModal from "../Components/CreateModal";
 import Header from "../Components/Header";
 import Footer from "../Components/Footer";
 import DeleteModal from "../Components/DeleteModal";
@@ -11,6 +14,9 @@ export default function MainPage({ items = [] }) {
 
   const [tab, setTab] = useState("all");
   const [deleteTarget, setDeleteTarget] = useState(null);
+  const [showCreate, setShowCreate] = useState(false);
+  const [editTarget, setEditTarget] = useState(null);
+
   const [toast, setToast] = useState(null);
 
 
@@ -35,9 +41,9 @@ export default function MainPage({ items = [] }) {
     });
   };
   const handleEdit = (item) => {
-    console.log(item);
-      router.get(`/createProduct/${item.product_id}`);
-  }
+  setEditTarget(item);
+  setShowCreate(true);
+};
 
   return (
     <div className="d-flex flex-column min-vh-100 bg-light">
@@ -52,7 +58,10 @@ export default function MainPage({ items = [] }) {
               {items.length} {items.length === 1 ? "item cadastrado" : "itens cadastrados"}
             </p>
           </div>
-          <Link href="/newProduct" className="btn btn-primary">+ Novo Item</Link>
+          
+          <button className="btn btn-primary mt-2 rounded-3" onClick={() => { setEditTarget(null); setShowCreate(true); }}>
+  Criar Primeiro Item
+</button>
         </div>
 
         {/* Tabs
@@ -79,7 +88,9 @@ export default function MainPage({ items = [] }) {
             <div style={{ fontSize: "2.5rem", opacity: 0.4 }} className="mb-3">📭</div>
             <h5 className="fw-semibold text-dark">Nenhum item ainda</h5>
             <p className="small">Crie seu primeiro item para começar</p>
-            <Link href="/newProduct" className="btn btn-primary mt-2">Criar Primeiro Item</Link>
+            <button className="btn btn-primary rounded-3" onClick={() => { setEditTarget(null); setShowCreate(true); }}>
+              <FontAwesomeIcon icon={faPlus} /> Novo Item
+            </button>
           </div>
         ) : (
           <div className="row g-3">
@@ -107,6 +118,12 @@ export default function MainPage({ items = [] }) {
       )}
 
       {toast && <Toast message={toast.message} icon={toast.icon} />}
+      {showCreate && (
+  <CreateModal
+    item={editTarget }
+    onClose={() => { setShowCreate(false); setEditTarget(null); }}
+  />
+)}
     </div>
   );
 }
@@ -138,13 +155,17 @@ function ItemCard({ item, onEdit, onDelete }) {
         )}
       </div>
       <div className="card-footer bg-white border-top d-flex justify-content-end gap-2">
-        <button className="btn btn-outline-secondary btn-sm" title="Editar" onClick={onEdit}>
-          ✏️ Editar
+        <button className="btn btn-outline-secondary btn-sm rounded-3" title="Editar" onClick={onEdit}>
+          <FontAwesomeIcon icon={faPen} />
+          Editar
         </button>
-        <button className="btn btn-outline-danger btn-sm" title="Excluir" onClick={onDelete}>
-          🗑 Excluir
+        
+        <button className="btn btn-outline-danger btn-sm rounded-3" title="Excluir" onClick={onDelete}>
+          <FontAwesomeIcon icon={faTrash} />
+          Excluir
         </button>
       </div>
+      
     </div>
   );
 }

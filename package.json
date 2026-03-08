@@ -15,10 +15,15 @@
         "vite": "^7.0.7"
     },
     "dependencies": {
+        "@fortawesome/fontawesome-svg-core": "^7.2.0",
+        "@fortawesome/free-brands-svg-icons": "^7.2.0",
+        "@fortawesome/free-solid-svg-icons": "^7.2.0",
+        "@fortawesome/react-fontawesome": "^3.2.0",
         "@inertiajs/react": "^2.3.17",
         "@vitejs/plugin-react": "^5.1.4",
         "bootstrap": "^5.3.8",
         "react": "^19.2.4",
-        "react-dom": "^19.2.4"
+        "react-dom": "^19.2.4",
+        "react-qr-code": "^2.0.18"
     }
 }

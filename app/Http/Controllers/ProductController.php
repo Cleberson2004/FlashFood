@@ -12,20 +12,12 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $id = session('user_id');
+        $id = session('user');
         $products = Product::whereNull('deleted_at')
-                       ->orderBy('created_at', 'desc')
-                       ->get();
+                    ->where('user_id', $id)
+                    ->orderBy('created_at', 'desc')
+                    ->get();
         return Inertia::render('MainPage', [ 'items' => $products ]);
-    }
-    public function newProduct()
-    {
-        return Inertia::render('CreatePage');
-    }
-    public function editProduct($id)
-    {
-        $product = Product::whereNull('deleted_at')->findOrFail($id);
-        return Inertia::render('CreatePage', ['item' => $product]);
     }
     public function createProduct(Request $request)
     {
@@ -44,6 +36,8 @@ class ProductController extends Controller
     $product->name        = $request->input('name');
     $product->description = $request->input('description');
     $product->price       = $request->input('price');
+    $userId = session('user');
+    $product->user_id     = $userId;
     $product->save();
 
     $message = $request->product_id ? 'Produto atualizado com sucesso!' : 'Produto criado com sucesso!';

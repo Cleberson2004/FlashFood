@@ -33,17 +33,19 @@ class AuthController extends Controller
         //get users
     
         $user = User::where('email', $username)
+            ->where('password', $password)
             ->where('deleted_at', NULL)
             ->first();
 
         if(!$user)
             {
-                return redirect()->back()->withErrors(['loginError' => 'Email ou senha incorretos.']);
+                return redirect()->back()->withErrors(['loginError' => 'Usuário não encontrado.']);
             }
 
-        if (!password_verify($password, $user->password)) {
+        /*if (!password_verify($password, $user->password)) {
             return redirect()->back()->withErrors(['loginError' => 'Email ou senha incorretos.']);
         }
+        */
         $user->last_login = date('Y-m-d H:i:s');
         $user->save();
 
@@ -70,5 +72,35 @@ class AuthController extends Controller
 
     public function cadastro(){
         return Inertia::render('CadastroPage');
+    }
+    public function cadastroSubmit(Request $request){
+        $request->validate([
+            [
+                'email' => 'required|email',
+                'password' => 'required|confirmed|min:8',
+                //'password_confirmation' => 'required|same:password',
+
+            ],
+            [
+                'email.required' => 'O campo do e-mail é obrigatório.',
+                'email.email' => 'O campo do e-mail deve ser um endereço de e-mail válido.',
+                'password.required' => 'O campo da senha é obrigatório.',
+                'password.min' => 'A senha deve conter no mínimo 6 caracteres.',
+                //'password.same' => 'As senhas devem ser iguais.',
+            ],
+            
+
+        ]);
+        $name = $request->input('name');
+        $email = $request->input('email');
+        $password = $request->input('password');
+
+        User::create([
+                'name'        => $name,
+                'email'   => $email,
+                'password' => $password
+        ]);
+        redirect('/login');
+        
     }
 }

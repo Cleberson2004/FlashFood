@@ -1,5 +1,7 @@
 // resources/js/Components/DeleteModal.jsx
 import { useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrash} from "@fortawesome/free-solid-svg-icons";
 
 export default function DeleteModal({ item, onConfirm, onCancel }) {
   const [loading, setLoading] = useState(false);
@@ -34,7 +36,7 @@ export default function DeleteModal({ item, onConfirm, onCancel }) {
                   className="rounded d-flex align-items-center justify-content-center bg-danger bg-opacity-10"
                   style={{ width: 44, height: 44, fontSize: "1.2rem" }}
                 >
-                  🗑️
+                  <FontAwesomeIcon icon={faTrash}/>
                 </div>
                 <div>
                   <h5 className="modal-title mb-0">Excluir Item</h5>

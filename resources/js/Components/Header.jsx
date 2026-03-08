@@ -16,17 +16,22 @@ export default function Header({ user }) {
         <ul className="navbar-nav me-auto">
           <li className="nav-item">
             <Link href="/" className={`nav-link ${isActive("/") ? "active fw-semibold" : ""}`}>
-              Itens
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Link href="/newProduct" className={`nav-link ${isActive("/newProduct") ? "active fw-semibold" : ""}`}>
-              Criar
+              Itens | 
             </Link>
           </li>
            <li className="nav-item">
             <Link href="/pedido" className={`nav-link ${isActive("/pedido") ? "active fw-semibold" : ""}`}>
-              Pedido
+              Fazer Pedido | 
+            </Link>
+          </li>
+          <li className="nav-item">
+            <Link href="/pedidos" className={`nav-link ${isActive("/pedido") ? "active fw-semibold" : ""}`}>
+              Lista de Pedidos | 
+            </Link>
+          </li>
+          <li className="nav-item">
+            <Link href="/admin/pedidos" className={`nav-link ${isActive("/pedido") ? "active fw-semibold" : ""}`}>
+              Lista de Pedidos Admin | 
             </Link>
           </li>
           

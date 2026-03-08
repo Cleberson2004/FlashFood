@@ -1,7 +1,33 @@
-import { Link, usePage, router } from "@inertiajs/react";
+import { useState, useEffect } from "react"; 
+import { Link, usePage, router, useForm } from "@inertiajs/react";
 
 
 export default function CadastroPage() {
+    const { data, setData, post, processing, errors } = useForm({
+      email: "",
+      name: "", 
+      password: "",
+    });
+      const { auth, flash } = usePage().props;
+
+    useEffect(() => {
+        if (flash?.success) {
+          showToast(flash.success, "✅");
+        }
+      }, [flash?.success]);
+    
+      const showToast = (message, icon = "✅") => {
+        setToast({ message, icon });
+        setTimeout(() => setToast(null), 3000);
+      };
+  function handleSubmit(e){
+    e.preventDefault();
+    post("/cadastroSubmit"), {
+    // onSuccess: () => {
+    //     showToast("Item excluído com sucesso.", "🗑️");
+    //   },
+    }
+  }
   return (
     <div className="d-flex align-items-center justify-content-center vh-100 bg-light">
       <div className="card shadow p-4" style={{ width: "100%", maxWidth: "420px" }}>
@@ -15,25 +41,37 @@ export default function CadastroPage() {
         <form>
           <div className="mb-3">
             <label className="form-label">Nome</label>
-            <input type="email" className="form-control" placeholder="voce@exemplo.com" />
+            <input type="text" value={errors.name} className="form-control" onChange={(e) => setData("name", e.target.value)} placeholder="João da Silva" />
+            {errors.name && (
+              <div className="text-danger">{errors.name}</div>
+            )}
           </div>
 
           <div className="mb-3">
             <label className="form-label">E-mail</label>
-            <input type="email" className="form-control" placeholder="voce@exemplo.com" />
+            <input type="email" value={errors.email} onChange={(e) => setData("email", e.target.value)} className="form-control" placeholder="voce@exemplo.com" />
+            {errors.email && (
+              <div className="text-danger">{errors.email}</div>
+            )}
           </div>
 
           <div className="mb-3">
             <div className="d-flex justify-content-between">
               <label className="form-label">Senha</label>
             </div>
-            <input type="password" className="form-control" placeholder="••••••••" />
+            <input type="password" value={errors.password} onChange={(e) => setData("password", e.target.value)} className="form-control" placeholder="••••••••" name="password" />
+            {errors.password && (
+              <div className="text-danger">{errors.password}</div>
+            )}
             <div className="d-flex justify-content-between">
               <label className="form-label">Confirmar Senha</label>
             </div>
-            <input type="password" className="form-control" placeholder="••••••••" />
+            <input type="password"value={errors.password} onChange={(e) => setData("password", e.target.value)}  className="form-control" placeholder="••••••••" />
+            {errors.password && (
+              <div className="text-danger">{errors.password}</div>
+            )}
           </div>
-            <Link href="/login" class="btn btn-primary w-100 mb-3">Cadastrar</Link>
+            <button type="submit" className="btn btn-primary w-100 d-flex align-items-center justify-content-center gap-2" onClick={handleSubmit}>Cadastrar</button>
           <div className="text-center text-muted my-2" style={{ fontSize: "0.75rem" }}>ou</div>
 
           <button type="button" className="btn btn-outline-secondary w-100 d-flex align-items-center justify-content-center gap-2">

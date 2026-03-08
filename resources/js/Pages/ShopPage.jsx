@@ -1,9 +1,13 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+import { usePage, useForm, router } from "@inertiajs/react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus, faMinus, faCheck, faCheckCircle, faCreditCard, faMoneyBill, faLock, faSearch} from "@fortawesome/free-solid-svg-icons";
+import { faPix } from "@fortawesome/free-brands-svg-icons";
+import QRCode from "react-qr-code";
+import Header from "../Components/Header";
+import Footer from "../Components/Footer";
 
-// ─── Mock data (substitua por props reais: { items = [] }) ───────────────────
-
-
-// ─── Helpers ─────────────────────────────────────────────────────────────────
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 const fmt = (v) => Number(v).toFixed(2).replace(".", ",");
 
 // ─── Product Selection Modal ──────────────────────────────────────────────────
@@ -18,137 +22,88 @@ function ProductModal({ item, onClose, onAddToCart, existingQty }) {
     return () => window.removeEventListener("keydown", handler);
   }, []);
 
-  const handleOverlayClick = (e) => {
-    if (e.target === overlayRef.current) onClose();
-  };
-
   return (
     <div
       ref={overlayRef}
-      onClick={handleOverlayClick}
+      onClick={(e) => { if (e.target === overlayRef.current) onClose(); }}
       style={{
-        position: "fixed", inset: 0, zIndex: 1000,
-        background: "rgba(15,10,5,0.65)", backdropFilter: "blur(4px)",
+        position: "fixed", inset: 0, zIndex: 1050,
+        background: "rgba(0,0,0,.45)", backdropFilter: "blur(4px)",
         display: "flex", alignItems: "center", justifyContent: "center",
         padding: "1rem",
-        animation: "fadeIn .18s ease",
       }}
     >
-      <div style={{
-        background: "#FFFDF9",
-        borderRadius: "20px",
-        width: "100%", maxWidth: "440px",
-        boxShadow: "0 32px 80px rgba(0,0,0,0.28)",
-        overflow: "hidden",
-        animation: "slideUp .22s cubic-bezier(.22,.61,.36,1)",
-      }}>
-        {/* Header colorido */}
-        <div style={{
-          background: "linear-gradient(135deg, #C9622A 0%, #E8833A 100%)",
-          padding: "1.5rem 1.5rem 1rem",
-          color: "#fff",
-        }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-            <div>
-              <p style={{ margin: 0, fontSize: ".7rem", letterSpacing: "2px", textTransform: "uppercase", opacity: .8 }}>
-                Selecionar Item
-              </p>
-              <h2 style={{ margin: ".25rem 0 0", fontSize: "1.4rem", fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700 }}>
-                {item.name}
-              </h2>
-            </div>
-            <button onClick={onClose} style={{
-              background: "rgba(255,255,255,.2)", border: "none", borderRadius: "50%",
-              width: 32, height: 32, cursor: "pointer", color: "#fff",
-              fontSize: "1rem", display: "flex", alignItems: "center", justifyContent: "center",
-            }}>✕</button>
+      <div className="card shadow-lg border-0" style={{ width: "100%", maxWidth: 440, borderRadius: 16, overflow: "hidden" }}>
+        {/* Header */}
+        <div className="card-header d-flex justify-content-between align-items-start border-0 text-white"
+          style={{ background: "#0d6efd", padding: "1.25rem 1.5rem" }}>
+          <div>
+            <p className="mb-0" style={{ fontSize: ".65rem", letterSpacing: "2px", textTransform: "uppercase", opacity: .8 }}>
+              Selecionar Item
+            </p>
+            <h5 className="mb-0 mt-1 fw-bold">{item.name}</h5>
+            {item.description && (
+              <p className="mb-0 mt-2 small" style={{ opacity: .9 }}>{item.description}</p>
+            )}
           </div>
-          <p style={{ margin: ".75rem 0 0", fontSize: ".85rem", opacity: .9, lineHeight: 1.5 }}>
-            {item.description}
-          </p>
+          <button
+            onClick={onClose}
+            className="btn btn-sm ms-3"
+            style={{ background: "rgba(255,255,255,.2)", color: "#fff", borderRadius: "50%", width: 32, height: 32, padding: 0, border: "none" }}
+          >✕</button>
         </div>
 
-        {/* Corpo */}
-        <div style={{ padding: "1.5rem" }}>
+        {/* Body */}
+        <div className="card-body p-4">
           {/* Preço */}
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.25rem" }}>
-            <span style={{ fontSize: ".8rem", color: "#888", textTransform: "uppercase", letterSpacing: "1px" }}>Preço unitário</span>
-            <span style={{ fontSize: "1.4rem", fontWeight: 800, color: "#C9622A", fontFamily: "monospace" }}>
-              R$ {fmt(item.price)}
-            </span>
+          <div className="d-flex justify-content-between align-items-center mb-3">
+            <span className="text-muted small text-uppercase" style={{ letterSpacing: "1px" }}>Preço unitário</span>
+            <span className="fw-bold fs-5" style={{ color: "#0d6efd", fontFamily: "monospace" }}>R$ {fmt(item.price)}</span>
           </div>
 
           {/* Quantidade */}
-          <div style={{ marginBottom: "1.25rem" }}>
-            <label style={{ fontSize: ".8rem", color: "#555", textTransform: "uppercase", letterSpacing: "1px", display: "block", marginBottom: ".5rem" }}>
-              Quantidade
-            </label>
-            <div style={{ display: "flex", alignItems: "center", gap: ".75rem" }}>
+          <div className="mb-3">
+            <label className="form-label text-muted small text-uppercase" style={{ letterSpacing: "1px" }}>Quantidade</label>
+            <div className="d-flex align-items-center gap-3">
               <button
                 onClick={() => setQty(q => Math.max(1, q - 1))}
-                style={{
-                  width: 40, height: 40, borderRadius: "50%",
-                  border: "2px solid #E8DDD0", background: "#fff",
-                  fontSize: "1.2rem", cursor: "pointer", fontWeight: 700,
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  transition: "all .15s",
-                }}
-              >−</button>
-              <span style={{
-                minWidth: 48, textAlign: "center", fontSize: "1.4rem",
-                fontWeight: 800, fontFamily: "monospace", color: "#1a1a1a"
-              }}>{qty}</span>
+                className="btn btn-outline-secondary rounded-circle"
+                style={{ width: 40, height: 40, padding: 0, fontWeight: 700, fontSize: "1.2rem" }}
+              ><FontAwesomeIcon icon={faMinus} /></button>
+              <span className="fw-bold fs-5 text-center" style={{ minWidth: 40, fontFamily: "monospace" }}>{qty}</span>
               <button
                 onClick={() => setQty(q => q + 1)}
-                style={{
-                  width: 40, height: 40, borderRadius: "50%",
-                  border: "2px solid #C9622A", background: "#C9622A",
-                  fontSize: "1.2rem", cursor: "pointer", fontWeight: 700, color: "#fff",
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  transition: "all .15s",
-                }}
-              >+</button>
-              <span style={{ fontSize: ".85rem", color: "#999", marginLeft: "auto" }}>
-                Subtotal: <strong style={{ color: "#1a1a1a" }}>R$ {fmt(item.price * qty)}</strong>
+                className="btn rounded-circle text-white"
+                style={{ width: 40, height: 40, padding: 0, fontWeight: 700, fontSize: "1.2rem", background: "#0d6efd", border: "none" }}
+              ><FontAwesomeIcon icon={faPlus} /></button>
+              <span className="text-muted small ms-auto">
+                Subtotal: <strong className="text-dark">R$ {fmt(item.price * qty)}</strong>
               </span>
             </div>
           </div>
 
           {/* Observação */}
-          <div style={{ marginBottom: "1.5rem" }}>
-            <label style={{ fontSize: ".8rem", color: "#555", textTransform: "uppercase", letterSpacing: "1px", display: "block", marginBottom: ".5rem" }}>
-              Observação (opcional)
+          <div className="mb-4">
+            <label className="form-label text-muted small text-uppercase" style={{ letterSpacing: "1px" }}>
+              Observação <span className="text-muted fw-normal">(opcional)</span>
             </label>
             <textarea
+              className="form-control"
               value={note}
               onChange={(e) => setNote(e.target.value)}
               placeholder="Ex: sem açúcar, bem gelado..."
               rows={2}
-              style={{
-                width: "100%", border: "2px solid #E8DDD0", borderRadius: "10px",
-                padding: ".6rem .8rem", fontSize: ".85rem", resize: "none",
-                fontFamily: "inherit", outline: "none", background: "#FDFAF6",
-                boxSizing: "border-box",
-              }}
+              style={{ resize: "none", fontSize: ".875rem" }}
             />
           </div>
 
-          {/* Botão confirmar */}
+          {/* Botão */}
           <button
             onClick={() => { onAddToCart(item, qty, note); onClose(); }}
-            style={{
-              width: "100%", padding: "1rem",
-              background: "linear-gradient(135deg, #C9622A 0%, #E8833A 100%)",
-              color: "#fff", border: "none", borderRadius: "12px",
-              fontSize: "1rem", fontWeight: 700, cursor: "pointer",
-              letterSpacing: ".5px",
-              boxShadow: "0 4px 20px rgba(201,98,42,.4)",
-              transition: "transform .15s, box-shadow .15s",
-            }}
-            onMouseEnter={e => { e.target.style.transform = "translateY(-2px)"; e.target.style.boxShadow = "0 8px 28px rgba(201,98,42,.45)"; }}
-            onMouseLeave={e => { e.target.style.transform = ""; e.target.style.boxShadow = "0 4px 20px rgba(201,98,42,.4)"; }}
+            className="btn w-100 fw-bold text-white"
+            style={{ background: "#0d6efd", border: "none", padding: ".85rem", borderRadius: 10, fontSize: "1rem" }}
           >
-            ✓ Adicionar ao Pedido
+            <FontAwesomeIcon icon={faCheck} />Adicionar ao Pedido
           </button>
         </div>
       </div>
@@ -158,11 +113,13 @@ function ProductModal({ item, onClose, onAddToCart, existingQty }) {
 
 // ─── Payment Modal ────────────────────────────────────────────────────────────
 function PaymentModal({ cart, items, onClose, onConfirm }) {
+  const { post, processing } = useForm();
   const [method, setMethod] = useState("pix");
   const [cardNum, setCardNum] = useState("");
   const [cardName, setCardName] = useState("");
   const [cardExp, setCardExp] = useState("");
   const [cardCvv, setCardCvv] = useState("");
+  const [errors, setErrors] = useState({});
   const [paid, setPaid] = useState(false);
   const overlayRef = useRef(null);
 
@@ -171,40 +128,65 @@ function PaymentModal({ cart, items, onClose, onConfirm }) {
     return sum + (item?.price || 0) * qty;
   }, 0);
 
+  const validate = () => {
+  const newErrors = {};
+
+  if (method === "card") {
+    const cleanNum = cardNum.replace(/\s/g, "");
+    if (cleanNum.length < 16) newErrors.cardNum = "Número do cartão inválido.";
+    if (!cardName.trim()) newErrors.cardName = "Informe o nome do cartão.";
+    if (cardExp.length < 5) newErrors.cardExp = "Validade inválida.";
+    if (cardCvv.length < 3) newErrors.cardCvv = "CVV inválido.";
+  }
+
+  setErrors(newErrors);
+  return Object.keys(newErrors).length === 0; // true = sem erros
+};
   const cartItems = Object.entries(cart).map(([id, { qty, note }]) => ({
     item: items.find(i => i.product_id === Number(id)),
     qty, note,
   })).filter(e => e.item);
 
-  const handleOverlayClick = (e) => { if (e.target === overlayRef.current) onClose(); };
+const handlePay = () => {
+  if (!validate()) return;
 
-  const handlePay = () => {
-    setPaid(true);
-    setTimeout(() => { onConfirm(); onClose(); }, 2200);
-  };
+    router.post("/createOrder", {
+        payment_method: method,
+        items: cartItems.map(({ item, qty }) => ({
+            product_id: item.product_id,
+            name: item.name,
+            price: item.price,
+            qty,
+        })),
+    }, {
+        onSuccess: () => {
+            if (method === "pix") {
+                onConfirm(method);
+                onClose();
+            } else {
+                setPaid(true);
+                setTimeout(() => { onConfirm(method); onClose(); }, 2200);
+            }
+        },
+    });
+};
 
   const methods = [
-    { key: "pix", label: "PIX", icon: "⚡" },
-    { key: "card", label: "Cartão", icon: "💳" },
-    { key: "cash", label: "Dinheiro", icon: "💵" },
+    { key: "pix", label: "PIX", icon: <FontAwesomeIcon icon={faPix} /> },
+    { key: "card", label: "Cartão", icon: <FontAwesomeIcon icon={faCreditCard} /> },
+    { key: "cash", label: "Dinheiro", icon: <FontAwesomeIcon icon={faMoneyBill} /> },
   ];
 
   if (paid) return (
     <div style={{
       position: "fixed", inset: 0, zIndex: 1100,
-      background: "rgba(15,10,5,.75)", backdropFilter: "blur(6px)",
+      background: "rgba(0,0,0,.5)", backdropFilter: "blur(6px)",
       display: "flex", alignItems: "center", justifyContent: "center",
     }}>
-      <div style={{
-        background: "#FFFDF9", borderRadius: "20px", padding: "3rem 2rem",
-        textAlign: "center", maxWidth: 320, width: "100%",
-        animation: "slideUp .3s cubic-bezier(.22,.61,.36,1)",
-      }}>
-        <div style={{ fontSize: "4rem", marginBottom: "1rem", animation: "pop .4s .1s both" }}>✅</div>
-        <h3 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: "1.5rem", marginBottom: ".5rem" }}>
-          Pedido Confirmado!
-        </h3>
-        <p style={{ color: "#888", fontSize: ".9rem" }}>Seu pedido está sendo preparado.</p>
+      <div className="card border-0 shadow-lg text-center p-5" style={{ maxWidth: 320, width: "100%", borderRadius: 20 }}>
+        <div style={{ fontSize: "3.5rem", marginBottom: "1rem" }}><FontAwesomeIcon icon={faCheckCircle} /></div>
+        <h5 className="fw-bold mb-2">Pedido Confirmado!</h5>
+        <p className="text-muted small mb-0">Seu pedido está sendo preparado.</p>
       </div>
     </div>
   );
@@ -212,192 +194,142 @@ function PaymentModal({ cart, items, onClose, onConfirm }) {
   return (
     <div
       ref={overlayRef}
-      onClick={handleOverlayClick}
+      onClick={(e) => { if (e.target === overlayRef.current) onClose(); }}
       style={{
         position: "fixed", inset: 0, zIndex: 1100,
-        background: "rgba(15,10,5,.7)", backdropFilter: "blur(5px)",
+        background: "rgba(0,0,0,.45)", backdropFilter: "blur(5px)",
         display: "flex", alignItems: "center", justifyContent: "center",
         padding: "1rem",
-        animation: "fadeIn .2s ease",
       }}
     >
-      <div style={{
-        background: "#FFFDF9", borderRadius: "20px", width: "100%", maxWidth: "520px",
-        maxHeight: "90vh", overflowY: "auto",
-        boxShadow: "0 40px 100px rgba(0,0,0,.3)",
-        animation: "slideUp .25s cubic-bezier(.22,.61,.36,1)",
-      }}>
-        {/* Header */}
-        <div style={{
-          background: "linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)",
-          padding: "1.5rem", color: "#fff", borderRadius: "20px 20px 0 0",
-          display: "flex", justifyContent: "space-between", alignItems: "center",
-        }}>
+      <div className="card border-0 shadow-lg" style={{ width: "100%", maxWidth: 520, maxHeight: "90vh", overflowY: "auto", borderRadius: 16, overflow: "hidden" }}>
+        {/* Header escuro */}
+        <div className="card-header border-0 d-flex justify-content-between align-items-center text-white"
+          style={{ background: "#1a1a1a", padding: "1.25rem 1.5rem" }}>
           <div>
-            <p style={{ margin: 0, fontSize: ".7rem", letterSpacing: "2px", textTransform: "uppercase", opacity: .6 }}>Finalizar</p>
-            <h2 style={{ margin: ".2rem 0 0", fontFamily: "'Playfair Display', Georgia, serif", fontSize: "1.4rem" }}>
-              Resumo do Pedido
-            </h2>
+            <p className="mb-0" style={{ fontSize: ".65rem", letterSpacing: "2px", textTransform: "uppercase", opacity: .6 }}>Finalizar</p>
+            <h5 className="mb-0 mt-1 fw-bold">Resumo do Pedido</h5>
           </div>
-          <button onClick={onClose} style={{
-            background: "rgba(255,255,255,.1)", border: "none", borderRadius: "50%",
-            width: 32, height: 32, cursor: "pointer", color: "#fff", fontSize: "1rem",
-          }}>✕</button>
+          <button onClick={onClose} className="btn btn-sm" style={{ background: "rgba(255,255,255,.1)", color: "#fff", borderRadius: "50%", width: 32, height: 32, padding: 0, border: "none" }}>
+            ✕
+          </button>
         </div>
 
-        <div style={{ padding: "1.5rem" }}>
-          {/* Itens do pedido */}
-          <div style={{ marginBottom: "1.5rem" }}>
-            <p style={{ fontSize: ".7rem", letterSpacing: "2px", textTransform: "uppercase", color: "#888", marginBottom: ".75rem" }}>
-              Itens selecionados
-            </p>
-            {cartItems.map(({ item, qty, note }) => (
-              <div key={item.product_id} style={{
-                display: "flex", justifyContent: "space-between", alignItems: "flex-start",
-                padding: ".75rem 0", borderBottom: "1px solid #F0EAE2",
-              }}>
-                <div>
-                  <span style={{ fontWeight: 600, fontSize: ".95rem" }}>{item.name}</span>
-                  <span style={{
-                    marginLeft: ".5rem", background: "#F0EAE2", borderRadius: "999px",
-                    padding: "1px 8px", fontSize: ".75rem", color: "#666",
-                  }}>×{qty}</span>
-                  {note && <p style={{ margin: ".2rem 0 0", fontSize: ".78rem", color: "#aaa", fontStyle: "italic" }}>"{note}"</p>}
-                </div>
-                <span style={{ fontWeight: 700, color: "#C9622A", fontFamily: "monospace", whiteSpace: "nowrap", marginLeft: "1rem" }}>
-                  R$ {fmt(item.price * qty)}
-                </span>
+        <div className="card-body p-4">
+          {/* Itens */}
+          <p className="text-muted small text-uppercase mb-2" style={{ letterSpacing: "2px" }}>Itens selecionados</p>
+          {cartItems.map(({ item, qty, note }) => (
+            <div key={item.product_id} className="d-flex justify-content-between align-items-start py-2 border-bottom">
+              <div>
+                <span className="fw-semibold small">{item.name}</span>
+                <span className="badge bg-light text-muted ms-2">×{qty}</span>
+                {note && <p className="text-muted mb-0 fst-italic" style={{ fontSize: ".75rem" }}>"{note}"</p>}
               </div>
-            ))}
-            <div style={{
-              display: "flex", justifyContent: "space-between",
-              padding: "1rem 0 0", fontWeight: 800, fontSize: "1.1rem",
-            }}>
-              <span>Total</span>
-              <span style={{ color: "#C9622A", fontFamily: "monospace" }}>R$ {fmt(total)}</span>
+              <span className="fw-bold small ms-3" style={{ color: "#0d6efd", fontFamily: "monospace", whiteSpace: "nowrap" }}>
+                R$ {fmt(item.price * qty)}
+              </span>
             </div>
+          ))}
+          <div className="d-flex justify-content-between pt-3 fw-bold">
+            <span>Total</span>
+            <span style={{ color: "#0d6efd", fontFamily: "monospace" }}>R$ {fmt(total)}</span>
           </div>
+
+          <hr />
 
           {/* Método de pagamento */}
-          <div style={{ marginBottom: "1.5rem" }}>
-            <p style={{ fontSize: ".7rem", letterSpacing: "2px", textTransform: "uppercase", color: "#888", marginBottom: ".75rem" }}>
-              Forma de pagamento
-            </p>
-            <div style={{ display: "flex", gap: ".75rem" }}>
-              {methods.map(m => (
-                <button
-                  key={m.key}
-                  onClick={() => setMethod(m.key)}
-                  style={{
-                    flex: 1, padding: ".75rem .5rem",
-                    border: `2px solid ${method === m.key ? "#C9622A" : "#E8DDD0"}`,
-                    borderRadius: "12px",
-                    background: method === m.key ? "#FEF3EC" : "#fff",
-                    cursor: "pointer", fontWeight: 600, fontSize: ".85rem",
-                    transition: "all .15s",
-                    display: "flex", flexDirection: "column", alignItems: "center", gap: ".25rem",
-                    color: method === m.key ? "#C9622A" : "#555",
-                  }}
-                >
-                  <span style={{ fontSize: "1.3rem" }}>{m.icon}</span>
-                  {m.label}
-                </button>
-              ))}
-            </div>
+          <p className="text-muted small text-uppercase mb-2 mt-3" style={{ letterSpacing: "2px" }}>Forma de pagamento</p>
+          <div className="d-flex gap-2 mb-3">
+            {methods.map(m => (
+              <button
+                key={m.key}
+                onClick={() => setMethod(m.key)}
+                className={`btn flex-fill d-flex flex-column align-items-center gap-1 py-2 small fw-semibold ${method === m.key ? "btn-primary" : "btn-outline-secondary"}`}
+                style={{}}
+              >
+                <span style={{ fontSize: "1.25rem" }}>{m.icon}</span>
+                {m.label}
+              </button>
+            ))}
           </div>
 
-          {/* Dados do cartão */}
+          {/* Detalhes de pagamento */}
           {method === "card" && (
-            <div style={{ marginBottom: "1.5rem", animation: "fadeIn .2s ease" }}>
-              <div style={{ marginBottom: ".75rem" }}>
-                <label style={{ fontSize: ".75rem", color: "#777", display: "block", marginBottom: ".3rem" }}>Número do cartão</label>
+            <div className="mb-3">
+              <div className="mb-2">
+                <label className="form-label small text-muted">Número do cartão</label>
                 <input
+                  className={`form-control form-control-sm ${errors.cardNum ? "is-invalid" : ""}`}
                   value={cardNum}
-                  onChange={e => setCardNum(e.target.value.replace(/\D/g,"").slice(0,16).replace(/(.{4})/g,"$1 ").trim())}
+                  onChange={e => {
+                    setCardNum(e.target.value.replace(/\D/g, "").slice(0, 16).replace(/(.{4})/g, "$1 ").trim());
+                    setErrors(prev => ({ ...prev, cardNum: null }));
+                  }}
                   placeholder="0000 0000 0000 0000"
-                  style={inputStyle}
                 />
+                {errors.cardNum && <div className="invalid-feedback">{errors.cardNum}</div>}
               </div>
-              <div style={{ marginBottom: ".75rem" }}>
-                <label style={{ fontSize: ".75rem", color: "#777", display: "block", marginBottom: ".3rem" }}>Nome no cartão</label>
-                <input value={cardName} onChange={e => setCardName(e.target.value.toUpperCase())} placeholder="NOME COMPLETO" style={inputStyle} />
+              <div className="mb-2">
+                <label className="form-label small text-muted">Nome no cartão</label>
+                <input className="form-control form-control-sm" value={cardName}
+                  onChange={e => {setCardName(e.target.value.toUpperCase());
+                    setErrors(prev => ({ ...prev, cardName: null }));
+                  }}
+                  placeholder="NOME COMPLETO" />
+                  {errors.cardName && <div className="invalid-feedback">{errors.cardName}</div>}
               </div>
-              <div style={{ display: "flex", gap: ".75rem" }}>
-                <div style={{ flex: 1 }}>
-                  <label style={{ fontSize: ".75rem", color: "#777", display: "block", marginBottom: ".3rem" }}>Validade</label>
-                  <input
-                    value={cardExp}
-                    onChange={e => {
-                      let v = e.target.value.replace(/\D/g,"").slice(0,4);
-                      if (v.length > 2) v = v.slice(0,2) + "/" + v.slice(2);
-                      setCardExp(v);
-                    }}
-                    placeholder="MM/AA" style={inputStyle}
-                  />
+              <div className="row g-2">
+                <div className="col">
+                  <label className="form-label small text-muted">Validade</label>
+                  <input className="form-control form-control-sm" value={cardExp}
+                    onChange={e => { let v = e.target.value.replace(/\D/g, "").slice(0, 4); if (v.length > 2) v = v.slice(0, 2) + "/" + v.slice(2); setCardExp(v);
+                      setErrors(prev => ({ ...prev, cardExp: null }));
+                     }}
+                    placeholder="MM/AA" />
+                    {errors.cardExp && <div className="invalid-feedback">{errors.cardExp}</div>}
+
                 </div>
-                <div style={{ flex: 1 }}>
-                  <label style={{ fontSize: ".75rem", color: "#777", display: "block", marginBottom: ".3rem" }}>CVV</label>
-                  <input value={cardCvv} onChange={e => setCardCvv(e.target.value.replace(/\D/g,"").slice(0,3))} placeholder="000" style={inputStyle} />
+                <div className="col">
+                  <label className="form-label small text-muted">CVV</label>
+                  <input className="form-control form-control-sm" value={cardCvv}
+                    onChange={e => {setCardCvv(e.target.value.replace(/\D/g, "").slice(0, 3))
+                      setErrors(prev => ({ ...prev, cardCvv: null }));
+                    }} placeholder="000" />
+                    {errors.cardCvv && <div className="invalid-feedback">{errors.cardCvv}</div>}
+
                 </div>
               </div>
             </div>
           )}
 
           {method === "pix" && (
-            <div style={{
-              marginBottom: "1.5rem", background: "#F5F0EA", borderRadius: "12px",
-              padding: "1rem", textAlign: "center", animation: "fadeIn .2s ease",
-            }}>
-              <div style={{ fontSize: "2.5rem", marginBottom: ".5rem" }}>⚡</div>
-              <p style={{ margin: 0, fontWeight: 700, fontSize: ".9rem" }}>PIX Instantâneo</p>
-              <p style={{ margin: ".25rem 0 0", fontSize: ".8rem", color: "#888" }}>
-                Um QR Code será gerado após confirmar.
-              </p>
+            <div className="alert border-0 text-center mb-3" style={{ background: "#e7f0ff" }}>
+              <p className="fw-bold small mb-1">PIX Instantâneo</p>
+              <p className="text-muted mb-0" style={{ fontSize: ".8rem" }}>Um QR Code será gerado após confirmar.</p>
             </div>
           )}
 
           {method === "cash" && (
-            <div style={{
-              marginBottom: "1.5rem", background: "#F5F0EA", borderRadius: "12px",
-              padding: "1rem", textAlign: "center", animation: "fadeIn .2s ease",
-            }}>
-              <div style={{ fontSize: "2.5rem", marginBottom: ".5rem" }}>💵</div>
-              <p style={{ margin: 0, fontWeight: 700, fontSize: ".9rem" }}>Pagar no caixa</p>
-              <p style={{ margin: ".25rem 0 0", fontSize: ".8rem", color: "#888" }}>
-                Apresente seu pedido ao atendente.
-              </p>
+            <div className="alert border-0 text-center mb-3" style={{ background: "#e7f0ff" }}>
+              <div style={{ fontSize: "2rem" }}><FontAwesomeIcon icon={faMoneyBill} /></div>
+              <p className="fw-bold small mb-1">Pagar no caixa</p>
+              <p className="text-muted mb-0" style={{ fontSize: ".8rem" }}>Apresente seu pedido ao atendente.</p>
             </div>
           )}
 
-          {/* Botão pagar */}
           <button
             onClick={handlePay}
-            style={{
-              width: "100%", padding: "1.1rem",
-              background: "linear-gradient(135deg, #1a1a1a 0%, #333 100%)",
-              color: "#fff", border: "none", borderRadius: "12px",
-              fontSize: "1rem", fontWeight: 700, cursor: "pointer",
-              letterSpacing: ".5px",
-              boxShadow: "0 4px 20px rgba(0,0,0,.25)",
-              transition: "transform .15s, box-shadow .15s",
-            }}
-            onMouseEnter={e => { e.target.style.transform = "translateY(-2px)"; e.target.style.boxShadow = "0 8px 28px rgba(0,0,0,.3)"; }}
-            onMouseLeave={e => { e.target.style.transform = ""; e.target.style.boxShadow = "0 4px 20px rgba(0,0,0,.25)"; }}
+            className="btn w-100 fw-bold text-white"
+            style={{ background: "#1a1a1a", border: "none", padding: ".85rem", borderRadius: 10, fontSize: "1rem" }}
           >
-            🔒 Confirmar Pagamento · R$ {fmt(total)}
+            <FontAwesomeIcon icon={faLock} />
+            Confirmar Pagamento · R$ {fmt(total)}
           </button>
         </div>
       </div>
     </div>
   );
 }
-
-const inputStyle = {
-  width: "100%", border: "2px solid #E8DDD0", borderRadius: "10px",
-  padding: ".6rem .8rem", fontSize: ".9rem", fontFamily: "inherit",
-  outline: "none", background: "#FDFAF6", boxSizing: "border-box",
-  transition: "border-color .15s",
-};
 
 // ─── Cart Pill (flutuante) ────────────────────────────────────────────────────
 function CartPill({ cart, items, onClick }) {
@@ -410,134 +342,126 @@ function CartPill({ cart, items, onClick }) {
   if (totalQty === 0) return null;
 
   return (
-    <div style={{
-      position: "fixed", bottom: "1.5rem", left: "50%", transform: "translateX(-50%)",
-      zIndex: 900,
-      animation: "slideUp .3s cubic-bezier(.22,.61,.36,1)",
-    }}>
+    <div style={{ position: "fixed", bottom: "1.5rem", left: "50%", transform: "translateX(-50%)", zIndex: 900 }}>
       <button
         onClick={onClick}
+        className="btn fw-bold text-white d-flex align-items-center gap-3 shadow-lg"
         style={{
-          background: "linear-gradient(135deg, #C9622A 0%, #E8833A 100%)",
-          color: "#fff", border: "none", borderRadius: "999px",
-          padding: ".9rem 2rem",
-          display: "flex", alignItems: "center", gap: "1rem",
-          cursor: "pointer",
-          boxShadow: "0 8px 32px rgba(201,98,42,.5)",
-          fontSize: "1rem", fontWeight: 700,
-          whiteSpace: "nowrap",
-          transition: "transform .15s, box-shadow .15s",
+          background: "#0d6efd",
+          borderRadius: 999, padding: ".8rem 2rem", border: "none",
+          whiteSpace: "nowrap", fontSize: "1rem",
+          boxShadow: "0 8px 32px rgba(13,110,253,.4)",
         }}
-        onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-3px)"; e.currentTarget.style.boxShadow = "0 14px 40px rgba(201,98,42,.55)"; }}
-        onMouseLeave={e => { e.currentTarget.style.transform = ""; e.currentTarget.style.boxShadow = "0 8px 32px rgba(201,98,42,.5)"; }}
       >
-        <span style={{
-          background: "rgba(255,255,255,.25)", borderRadius: "50%",
-          width: 28, height: 28, display: "flex", alignItems: "center", justifyContent: "center",
-          fontSize: ".85rem", fontWeight: 900,
-        }}>{totalQty}</span>
+        <span className="badge rounded-pill bg-white text-dark">{totalQty}</span>
         <span>Concluir Pedido</span>
-        <span style={{ opacity: .85, fontSize: ".9rem" }}>R$ {fmt(total)}</span>
+        <span style={{ opacity: .9 }}>R$ {fmt(total)}</span>
       </button>
     </div>
   );
 }
 
-// ─── Item Card (somente leitura + seleção) ────────────────────────────────────
+// ─── Item Card ────────────────────────────────────────────────────────────────
 function ItemCard({ item, cartQty, onClick }) {
   const isInCart = cartQty > 0;
 
   return (
     <div
       onClick={onClick}
-      style={{
-        background: "#FFFDF9",
-        borderRadius: "16px",
-        border: `2px solid ${isInCart ? "#C9622A" : "#EDE8E0"}`,
-        cursor: "pointer",
-        transition: "transform .18s, box-shadow .18s, border-color .18s",
-        overflow: "hidden",
-        position: "relative",
-        boxShadow: isInCart ? "0 4px 20px rgba(201,98,42,.15)" : "0 2px 8px rgba(0,0,0,.06)",
-      }}
-      onMouseEnter={e => {
-        e.currentTarget.style.transform = "translateY(-4px)";
-        e.currentTarget.style.boxShadow = isInCart
-          ? "0 10px 32px rgba(201,98,42,.25)"
-          : "0 10px 28px rgba(0,0,0,.1)";
-      }}
-      onMouseLeave={e => {
-        e.currentTarget.style.transform = "";
-        e.currentTarget.style.boxShadow = isInCart ? "0 4px 20px rgba(201,98,42,.15)" : "0 2px 8px rgba(0,0,0,.06)";
-      }}
+      className={`card h-100 shadow-sm border ${isInCart ? "border-primary" : ""}`}
+      style={{ cursor: "pointer", transition: "box-shadow .2s, transform .2s", borderRadius: 12, overflow: "hidden" }}
+      onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-3px)"; e.currentTarget.style.boxShadow = "0 8px 24px rgba(0,0,0,.12)"; }}
+      onMouseLeave={e => { e.currentTarget.style.transform = ""; e.currentTarget.style.boxShadow = ""; }}
     >
-      {/* Badge de quantidade no carrinho */}
-      {isInCart && (
-        <div style={{
-          position: "absolute", top: "12px", right: "12px",
-          background: "#C9622A", color: "#fff",
-          borderRadius: "50%", width: 28, height: 28,
-          display: "flex", alignItems: "center", justifyContent: "center",
-          fontSize: ".8rem", fontWeight: 800, zIndex: 1,
-          boxShadow: "0 2px 8px rgba(201,98,42,.4)",
-        }}>{cartQty}</div>
-      )}
-
       {/* Barra colorida no topo */}
       <div style={{
-        height: "4px",
+        height: 4,
         background: isInCart
-          ? "linear-gradient(90deg, #C9622A, #E8833A)"
-          : "linear-gradient(90deg, #E8DDD0, #F0EAE2)",
+          ? "#0d6efd"
+          : "linear-gradient(90deg, #dee2e6, #e9ecef)",
       }} />
 
-      <div style={{ padding: "1.1rem" }}>
-        <div style={{ marginBottom: ".6rem" }}>
-          <h6 style={{
-            margin: 0, fontFamily: "'Playfair Display', Georgia, serif",
-            fontSize: "1.05rem", fontWeight: 700, color: "#1a1a1a",
-            paddingRight: isInCart ? "2rem" : 0,
-          }}>{item.name}</h6>
-          <span style={{
-            fontSize: ".68rem", color: "#bbb", letterSpacing: "1px",
-            textTransform: "uppercase",
-          }}>#{String(item.product_id).padStart(3, "0")}</span>
+      <div className="card-body">
+        <div className="d-flex justify-content-between align-items-start mb-2">
+          <h6 className="card-title fw-semibold mb-0">{item.name}</h6>
+          {isInCart ? (
+            <span className="badge text-white" style={{ background: "#0d6efd" }}>✓ {cartQty}×</span>
+          ) : (
+            <span className="badge bg-secondary">#{String(item.product_id).padStart(3, "0")}</span>
+          )}
         </div>
 
-        <p style={{
-          margin: "0 0 .75rem", fontSize: ".82rem", color: "#777",
-          lineHeight: 1.5,
+        <p className="card-text text-muted small" style={{
           display: "-webkit-box", WebkitLineClamp: 2,
           WebkitBoxOrient: "vertical", overflow: "hidden",
         }}>
-          {item.description || "Sem descrição"}
+          {item.description || <em>Sem descrição</em>}
         </p>
 
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <span style={{
-            fontSize: "1.15rem", fontWeight: 800, color: "#C9622A", fontFamily: "monospace",
-          }}>
+        <div className="d-flex justify-content-between align-items-center mt-3">
+          <span className="fw-semibold" style={{ color: "#198754" }}>
             R$ {fmt(item.price)}
           </span>
-          <span style={{
-            fontSize: ".75rem",
-            color: isInCart ? "#C9622A" : "#aaa",
-            fontWeight: isInCart ? 700 : 400,
-          }}>
+          <span className="text-muted" style={{ fontSize: ".75rem" }}>
             {isInCart ? "✓ No pedido" : "Toque para adicionar"}
           </span>
         </div>
+      </div>
+
+      <div className="card-footer bg-white border-top d-flex justify-content-end">
+        <button
+          className="btn btn-sm fw-semibold text-white"
+          style={{ background: isInCart ? "#0d6efd" : "#6c757d", border: "none", borderRadius: 8, fontSize: ".8rem" }}
+          onClick={(e) => { e.stopPropagation(); onClick(); }}
+        >
+          {isInCart ? "✏️ Editar" : "+ Adicionar"}
+        </button>
       </div>
     </div>
   );
 }
 
+
+//--------- PIX MODAL -------------------//
+
+function PixModal({ onClose }) {
+  return (
+    <div
+      onClick={onClose}
+      style={{
+        position: "fixed", inset: 0, zIndex: 1200,
+        background: "rgba(0,0,0,.5)", backdropFilter: "blur(4px)",
+        display: "flex", alignItems: "center", justifyContent: "center",
+        padding: "1rem",
+      }}
+    >
+      <div className="card border-0 shadow-lg text-center p-4"
+        style={{ maxWidth: 360, width: "100%", borderRadius: 16, paddingBottom: 40 }}
+        onClick={e => e.stopPropagation()}
+      >
+        <h5 className="fw-bold mb-3">Escaneie o QR Code</h5>
+        <QRCode
+          size={256}
+          style={{ height: "auto", maxWidth: "100%", width: "100%" }}
+          value="https://google.com"
+          viewBox={`0 0 256 256`}
+        />
+        <button className="btn btn-primary mt-3 rounded-pill" onClick={onClose}>
+          Fechar
+        </button>
+      </div>
+    </div>
+  );
+}
 // ─── Main Page ────────────────────────────────────────────────────────────────
 export default function ShopPage({ items = [] }) {
-  const [cart, setCart] = useState({});           // { product_id: { qty, note } }
+  const { auth } = usePage().props;
+
+  const [cart, setCart] = useState({});
   const [selectedItem, setSelectedItem] = useState(null);
   const [showPayment, setShowPayment] = useState(false);
   const [search, setSearch] = useState("");
+  const [showPix, setShowPix] = useState(false);
 
   const filteredItems = items.filter(i =>
     i.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -548,111 +472,74 @@ export default function ShopPage({ items = [] }) {
     setCart(prev => ({ ...prev, [item.product_id]: { qty, note } }));
   };
 
-  const handleConfirm = () => {
+const handleConfirm = (method) => {
     setCart({});
-  };
-
+    if (method === "pix") {
+        setShowPix(true);
+    }
+};
   const totalInCart = Object.values(cart).reduce((s, { qty }) => s + qty, 0);
 
   return (
-    <>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=DM+Sans:wght@400;500;600;700;800&display=swap');
-        * { box-sizing: border-box; }
-        body { margin: 0; font-family: 'DM Sans', sans-serif; }
-        @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px) } to { opacity: 1; transform: translateY(0) } }
-        @keyframes pop { 0% { transform: scale(.5) } 70% { transform: scale(1.15) } 100% { transform: scale(1) } }
-        ::-webkit-scrollbar { width: 6px }
-        ::-webkit-scrollbar-thumb { background: #DDD3C8; border-radius: 3px }
-      `}</style>
+    <div className="d-flex flex-column min-vh-100 bg-light">
+      <Header user={auth?.user} />
 
-      <div style={{ minHeight: "100vh", background: "#F7F2EC", paddingBottom: "6rem" }}>
+      <main className="container py-4 flex-grow-1" style={{ paddingBottom: "6rem" }}>
+        {/* Page header */}
+        <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+          <div>
+            <h1 className="h3 fw-bold mb-1">Cardápio</h1>
+            <p className="text-muted small mb-0">
+              {filteredItems.length} {filteredItems.length === 1 ? "item disponível" : "itens disponíveis"}
+              {search && ` para "${search}"`}
+            </p>
+          </div>
 
-        {/* Header */}
-        <div style={{
-          background: "#FFFDF9",
-          borderBottom: "1px solid #EDE8E0",
-          padding: "1rem 1.5rem",
-          position: "sticky", top: 0, zIndex: 100,
-          boxShadow: "0 2px 12px rgba(0,0,0,.05)",
-        }}>
-          <div style={{ maxWidth: "900px", margin: "0 auto", display: "flex", alignItems: "center", gap: "1rem", flexWrap: "wrap" }}>
-            <div style={{ flex: 1, minWidth: "180px" }}>
-              <p style={{ margin: 0, fontSize: ".65rem", letterSpacing: "3px", textTransform: "uppercase", color: "#C9622A" }}>
-                Cardápio
-              </p>
-              <h1 style={{
-                margin: 0, fontFamily: "'Playfair Display', Georgia, serif",
-                fontSize: "1.4rem", fontWeight: 800, color: "#1a1a1a",
-              }}>Fazer Pedido</h1>
-            </div>
-
-            {/* Busca */}
-            <div style={{ position: "relative", flex: 2, minWidth: "200px", maxWidth: "340px" }}>
-              <span style={{
-                position: "absolute", left: ".75rem", top: "50%", transform: "translateY(-50%)",
-                fontSize: ".9rem", color: "#bbb",
-              }}>🔍</span>
+          {/* Busca */}
+          <div className="d-flex align-items-center gap-2 flex-wrap">
+            <div className="input-group" style={{ maxWidth: 300 }}>
+              <span className="input-group-text bg-white border-end-0"><FontAwesomeIcon icon={faSearch}/></span>
               <input
+                type="text"
+                className="form-control border-start-0 ps-0"
+                placeholder="Buscar item..."
                 value={search}
                 onChange={e => setSearch(e.target.value)}
-                placeholder="Buscar item..."
-                style={{
-                  width: "100%", padding: ".6rem .75rem .6rem 2.2rem",
-                  border: "2px solid #EDE8E0", borderRadius: "999px",
-                  fontSize: ".875rem", fontFamily: "inherit", outline: "none",
-                  background: "#F7F2EC", transition: "border-color .15s",
-                }}
-                onFocus={e => e.target.style.borderColor = "#C9622A"}
-                onBlur={e => e.target.style.borderColor = "#EDE8E0"}
+                style={{ fontSize: ".875rem" }}
               />
-            </div>
 
-            {/* Contador do carrinho (mini) */}
+            </div>
             {totalInCart > 0 && (
-              <div style={{
-                background: "#FEF3EC", border: "2px solid #C9622A",
-                borderRadius: "999px", padding: ".4rem 1rem",
-                fontSize: ".8rem", fontWeight: 700, color: "#C9622A",
-                whiteSpace: "nowrap",
-              }}>
+              <span className="badge rounded-pill fw-semibold" style={{ background: "#e7f0ff", color: "#0d6efd", border: "1.5px solid #0d6efd", padding: ".45rem .9rem", fontSize: ".8rem" }}>
                 🛒 {totalInCart} {totalInCart === 1 ? "item" : "itens"}
-              </div>
+              </span>
             )}
           </div>
         </div>
 
         {/* Grid de produtos */}
-        <div style={{ maxWidth: "900px", margin: "0 auto", padding: "1.5rem 1rem" }}>
-          <p style={{ fontSize: ".8rem", color: "#aaa", marginBottom: "1.25rem" }}>
-            {filteredItems.length} {filteredItems.length === 1 ? "item disponível" : "itens disponíveis"}
-            {search && ` para "${search}"`}
-          </p>
-
-          {filteredItems.length === 0 ? (
-            <div style={{ textAlign: "center", padding: "4rem 0", color: "#aaa" }}>
-              <div style={{ fontSize: "3rem", marginBottom: "1rem", opacity: .4 }}>🔍</div>
-              <p style={{ fontWeight: 600, color: "#888" }}>Nenhum item encontrado</p>
-            </div>
-          ) : (
-            <div style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))",
-              gap: "1rem",
-            }}>
-              {filteredItems.map(item => (
+        {filteredItems.length === 0 ? (
+          <div className="text-center py-5 text-muted">
+            <div style={{ fontSize: "2.5rem", opacity: 0.4 }} className="mb-3">🔍</div>
+            <h5 className="fw-semibold text-dark">Nenhum item encontrado</h5>
+            <p className="small">Tente buscar por outro nome ou descrição</p>
+          </div>
+        ) : (
+          <div className="row g-3">
+            {filteredItems.map(item => (
+              <div className="col-sm-6 col-lg-4" key={item.product_id}>
                 <ItemCard
-                  key={item.product_id}
                   item={item}
                   cartQty={cart[item.product_id]?.qty || 0}
                   onClick={() => setSelectedItem(item)}
                 />
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </main>
+
+      <Footer />
 
       {/* Cart Pill flutuante */}
       <CartPill cart={cart} items={items} onClick={() => setShowPayment(true)} />
@@ -666,7 +553,7 @@ export default function ShopPage({ items = [] }) {
           onAddToCart={addToCart}
         />
       )}
-
+      {showPix && <PixModal onClose={() => setShowPix(false)} />}
       {/* Modal de pagamento */}
       {showPayment && (
         <PaymentModal
@@ -676,6 +563,7 @@ export default function ShopPage({ items = [] }) {
           onConfirm={handleConfirm}
         />
       )}
-    </>
+      
+    </div>
   );
 }
