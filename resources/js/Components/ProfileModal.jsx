@@ -1,6 +1,8 @@
 // resources/js/Components/ProfileModal.jsx
 import { useEffect, useRef } from "react";
 import { router } from "@inertiajs/react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faDoorClosed } from "@fortawesome/free-solid-svg-icons";
 
 export default function ProfileModal({ user, onClose }) {
   const modalRef = useRef(null);
@@ -51,7 +53,7 @@ export default function ProfileModal({ user, onClose }) {
           className="btn btn-sm w-100 text-start text-danger d-flex align-items-center gap-2"
           onClick={handleLogout}
         >
-          🚪 Sair
+          <FontAwesomeIcon icon={faDoorClosed}/>  Sair
         </button>
       </div>
     </div>

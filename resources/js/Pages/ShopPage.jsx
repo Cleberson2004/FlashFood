@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { usePage, useForm, router } from "@inertiajs/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faMinus, faCheck, faCheckCircle, faCreditCard, faMoneyBill, faLock, faSearch} from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faMinus, faCheck, faCheckCircle, faCreditCard, faMoneyBill, faLock, faSearch, faPen} from "@fortawesome/free-solid-svg-icons";
 import { faPix } from "@fortawesome/free-brands-svg-icons";
 import QRCode from "react-qr-code";
 import Header from "../Components/Header";
@@ -11,6 +11,7 @@ import Footer from "../Components/Footer";
 const fmt = (v) => Number(v).toFixed(2).replace(".", ",");
 
 // ─── Product Selection Modal ──────────────────────────────────────────────────
+
 function ProductModal({ item, onClose, onAddToCart, existingQty }) {
   const [qty, setQty] = useState(existingQty || 1);
   const [note, setNote] = useState("");
@@ -364,6 +365,7 @@ function CartPill({ cart, items, onClick }) {
 // ─── Item Card ────────────────────────────────────────────────────────────────
 function ItemCard({ item, cartQty, onClick }) {
   const isInCart = cartQty > 0;
+  const imageUrl = item.product_image ? `/storage/${item.product_image}` : null;
 
   return (
     <div
@@ -373,6 +375,7 @@ function ItemCard({ item, cartQty, onClick }) {
       onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-3px)"; e.currentTarget.style.boxShadow = "0 8px 24px rgba(0,0,0,.12)"; }}
       onMouseLeave={e => { e.currentTarget.style.transform = ""; e.currentTarget.style.boxShadow = ""; }}
     >
+      
       {/* Barra colorida no topo */}
       <div style={{
         height: 4,
@@ -380,12 +383,26 @@ function ItemCard({ item, cartQty, onClick }) {
           ? "#0d6efd"
           : "linear-gradient(90deg, #dee2e6, #e9ecef)",
       }} />
-
+   {/* Imagem */}
+      {imageUrl ? (
+        <img
+          src={imageUrl}
+          alt={item.name}
+          style={{ width: "100%", height: 160, objectFit: "cover" }}
+        />
+      ) : (
+        <div
+          className="d-flex align-items-center justify-content-center bg-light text-muted"
+          style={{ height: 160, fontSize: "2rem" }}
+        >
+          🍽️
+        </div>
+      )}
       <div className="card-body">
         <div className="d-flex justify-content-between align-items-start mb-2">
           <h6 className="card-title fw-semibold mb-0">{item.name}</h6>
           {isInCart ? (
-            <span className="badge text-white" style={{ background: "#0d6efd" }}>✓ {cartQty}×</span>
+            <span className="badge text-white" style={{ background: "#0d6efd" }}><FontAwesomeIcon icon={faCheckCircle}/>{cartQty}×</span>
           ) : (
             <span className="badge bg-secondary">#{String(item.product_id).padStart(3, "0")}</span>
           )}
@@ -414,7 +431,7 @@ function ItemCard({ item, cartQty, onClick }) {
           style={{ background: isInCart ? "#0d6efd" : "#6c757d", border: "none", borderRadius: 8, fontSize: ".8rem" }}
           onClick={(e) => { e.stopPropagation(); onClick(); }}
         >
-          {isInCart ? "✏️ Editar" : "+ Adicionar"}
+          {isInCart ? "Editar" : "+ Adicionar"}
         </button>
       </div>
     </div>

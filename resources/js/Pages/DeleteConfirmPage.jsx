@@ -3,6 +3,8 @@ import { router, usePage } from "@inertiajs/react";
 import { useState } from "react";
 import Header from "../Components/Header";
 import Footer from "../Components/Footer";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrash, faWarning } from "@fortawesome/free-solid-svg-icons";
 
 /**
  * Página de confirmação de exclusão — Inertia.js
@@ -75,7 +77,7 @@ function ConfirmCard({ item, loading, onConfirm }) {
           background: "var(--danger-glow)", border: "1px solid rgba(255,79,106,0.3)",
           display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.4rem",
         }}>
-          🗑️
+          <FontAwesomeIcon icon={faTrash}/>
         </div>
         <div>
           <h1 style={{ fontSize: "1.2rem", fontWeight: 700, letterSpacing: "-0.02em", marginBottom: "0.3rem" }}>
@@ -110,7 +112,7 @@ function ConfirmCard({ item, loading, onConfirm }) {
           background: "rgba(255,79,106,0.06)", border: "1px solid rgba(255,79,106,0.2)",
           borderRadius: "var(--radius-sm)", marginBottom: "1.5rem",
         }}>
-          <span style={{ fontSize: "1rem", flexShrink: 0 }}>⚠️</span>
+          <span style={{ fontSize: "1rem", flexShrink: 0 }}><FontAwesomeIcon icon={faWarning}/></span>
           <p style={{ fontSize: "0.82rem", color: "var(--text-muted)", lineHeight: 1.5 }}>
             Ao confirmar, o item{" "}
             <strong style={{ color: "var(--danger)" }}>"{item.title}"</strong>{" "}
@@ -141,7 +143,7 @@ function SuccessState() {
       animation: "scaleIn 0.3s cubic-bezier(0.34,1.56,0.64,1) both",
     }}>
       <style>{`@keyframes scaleIn { from{opacity:0;transform:scale(0.85)} to{opacity:1;transform:scale(1)} }`}</style>
-      <div style={{ fontSize: "2.5rem", marginBottom: "1rem" }}>✅</div>
+      <div style={{ fontSize: "2.5rem", marginBottom: "1rem" }}><FontAwesomeIcon icon={faTrash}/></div>
       <h2 style={{ fontSize: "1.1rem", fontWeight: 600, marginBottom: "0.4rem" }}>Item excluído</h2>
       <p style={{ fontSize: "0.85rem", color: "var(--text-muted)", marginBottom: "1.25rem" }}>
         O item foi removido com sucesso.

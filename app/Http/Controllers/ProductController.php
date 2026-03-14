@@ -12,41 +12,59 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $id = session('user');
-        $products = Product::whereNull('deleted_at')
-                    ->where('user_id', $id)
-                    ->orderBy('created_at', 'desc')
-                    ->get();
+        $user = session('user');
+        $storeId = session('user.store_id');
+        $isAdmin = session('user.user_role') === 'admin';
+
+       $products = Product::whereNull('deleted_at')
+        ->when(!$isAdmin, fn($q) => $q->where('store_id', $storeId))
+        ->get();
+
+
         return Inertia::render('MainPage', [ 'items' => $products ]);
     }
     public function createProduct(Request $request)
     {
+        
     $request->validate([
-        'name'        => 'required',
-        'description' => 'required',
+        'product_code'  => 'required',
+        'name'          => 'required',
+        'price'         => 'required',
+        
     ], [
-        'name.required'        => 'O campo do nome é obrigatório.',
-        'description.required' => 'O campo da descrição é obrigatório.',
+        'product_code.required'      => 'O código do produto é obrigatório.',
+        'name.required'              => 'O campo do nome é obrigatório.',
+        'price.required'             => 'O preço do produto é obrigatório.',
+        
     ]);
+        $storeId = session('user.store_id');
 
-    $product = $request->product_id
-        ? Product::whereNull('deleted_at')->findOrFail($request->product_id)
-        : new Product();
-
-    $userId = session('user.id');
-
-    Product::create([
-                'name'    => $request->name,
-                'description'   => $request->description,
-                'price'   => $request->price,
-                'user_id'       => $userId,
+        $data = [
+                'product_code' => $request->product_code,
+                'name'         => $request->name,
+                'description'  => $request->description,
+                'price'        => $request->price,
+                'store_id'     => $storeId,
                 
-    ]);
+            ];
+            if ($request->hasFile('product_image')) {
+                $data['product_image'] = $request->file('product_image')->store('products', 'public');
+            }
 
-    $message = $request->product_id ? 'Produto atualizado com sucesso!' : 'Produto criado com sucesso!';
+            if ($request->product_id) {
+                
+                $product = Product::whereNull('deleted_at')->findOrFail($request->product_id);
+                $product->update($data);
+                $message = 'Produto atualizado com sucesso!';
+            } else {
+                
+                $data['user_id'] = session('user.id');
+                $data['store_id'] = session('user.store_id');
+                Product::create($data);
+                $message = 'Produto criado com sucesso!';
+            }
 
-    return redirect('/')->with('success', $message);
-
+            return redirect('/')->with('success', $message);
     }
     public function deleteProduct($id){
         $product = Product::whereNull('deleted_at')->findOrFail($id);
@@ -55,7 +73,15 @@ class ProductController extends Controller
     }
     public function shop()
     {
-    $items = Product::all();
+    $storeId = session('user.store_id');
+    
+    $items = collect();
+
+    if ($storeId) {
+        $items = Product::whereNull('deleted_at')
+            ->where('store_id', $storeId)
+            ->get();
+    }
 
     return Inertia::render('ShopPage', [
         'items' => $items,

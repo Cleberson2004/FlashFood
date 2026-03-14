@@ -6,23 +6,29 @@ export default function CreateModal({ item, onClose }) {
 
   const { data, setData, post, put, processing, errors } = useForm({
     product_id: item?.product_id ?? null,
+    product_code: item?.product_code ?? "", 
     name: item?.name ?? "",
     description: item?.description ?? "",
     price: item?.price ?? "",
   });
 
-  function handleSubmit(e) {
-    e.preventDefault();
-    if (isEdit) {
-      put(`/createProduct/${item.product_id}`, { onSuccess: onClose });
-    } else {
-      post("/createProduct", { onSuccess: onClose });
-    }
+function handleSubmit(e) {
+  e.preventDefault();
+  if (isEdit) {
+    put(`/createProduct/${item.product_id}`, {
+      forceFormData: true, // 👈
+      onSuccess: onClose,
+    });
+  } else {
+    post("/createProduct", {
+      forceFormData: true, // 👈
+      onSuccess: onClose,
+    });
   }
+}
 
   return (
     <div
-      onClick={onClose}
       style={{
         position: "fixed", inset: 0, zIndex: 1050,
         background: "rgba(0,0,0,.45)", backdropFilter: "blur(4px)",
@@ -54,7 +60,30 @@ export default function CreateModal({ item, onClose }) {
         {/* Formulário */}
         <form onSubmit={handleSubmit}>
           <div className="card-body p-4 d-flex flex-column gap-3">
-
+            <div>
+              <label className="form-label fw-semibold">
+                Imagem do Produto <span className="text-danger">*</span>
+              </label>
+              <input
+                type="file"
+                onChange={e => setData("product_image", e.target.files[0])}
+              />
+              {errors.product_image && <div className="invalid-feedback">{errors.product_image}</div>}
+            </div>
+            <div>
+              <label className="form-label fw-semibold">
+                Código do Produto <span className="text-danger">*</span>
+              </label>
+              <input
+                type="number"
+                className={`form-control ${errors.product_code ? "is-invalid" : ""}`}
+                placeholder="Ex.: 123"
+                value={data.product_code}
+                maxLength={80}
+                onChange={e => setData("product_code", e.target.value)}
+              />
+              {errors.product_code && <div className="invalid-feedback">{errors.product_code}</div>}
+            </div>
             <div>
               <label className="form-label fw-semibold">
                 Título <span className="text-danger">*</span>

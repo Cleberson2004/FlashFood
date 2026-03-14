@@ -13,6 +13,7 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('product_id');
             $table->string('product_name');
+            $table->string('product_image')->nullable();
             $table->decimal('product_price', 10, 2);
             $table->string('payment_method');
             $table->tinyInteger('status_order')->default(1);
