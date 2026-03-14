@@ -33,12 +33,15 @@ class ProductController extends Controller
         ? Product::whereNull('deleted_at')->findOrFail($request->product_id)
         : new Product();
 
-    $product->name        = $request->input('name');
-    $product->description = $request->input('description');
-    $product->price       = $request->input('price');
-    $userId = session('user');
-    $product->user_id     = $userId;
-    $product->save();
+    $userId = session('user.id');
+
+    Product::create([
+                'name'    => $request->name,
+                'description'   => $request->description,
+                'price'   => $request->price,
+                'user_id'       => $userId,
+                
+    ]);
 
     $message = $request->product_id ? 'Produto atualizado com sucesso!' : 'Produto criado com sucesso!';
 

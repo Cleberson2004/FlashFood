@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
 
 class AuthController extends Controller
@@ -14,57 +16,37 @@ class AuthController extends Controller
     }
 
     public function loginSubmit(Request $request){
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required|min:6',
-        ],
-        [
-            'email.required' => 'O campo do e-mail é obrigatório.',
-            'email.email' => 'O campo do e-mail deve ser um endereço de e-mail válido.',
-            'password.required' => 'O campo da senha é obrigatório.',
-            'password.min' => 'A senha deve conter no mínimo 6 caracteres.',
-        ]
-        );
-        $username = $request->input('email');
-        $password = $request->input('password');
-
-        //return Inertia::render('MainPage');
-
-        //get users
+    $request->validate([
+        'email'    => 'required|email',
+        'password' => 'required|min:6',
+    ], [
+        'email.required'    => 'O campo do e-mail é obrigatório.',
+        'email.email'       => 'O e-mail deve ser um endereço válido.',
+        'password.required' => 'O campo da senha é obrigatório.',
+        'password.min'      => 'A senha deve ter no mínimo 6 caracteres.',
+    ]);
     
-        $user = User::where('email', $username)
-            ->where('password', $password)
-            ->where('deleted_at', NULL)
-            ->first();
+    $user = User::where('email', $request->email)
+                ->whereNull('deleted_at')
+                ->first();
 
-        if(!$user)
-            {
-                return redirect()->back()->withErrors(['loginError' => 'Usuário não encontrado.']);
-            }
-
-        /*if (!password_verify($password, $user->password)) {
-            return redirect()->back()->withErrors(['loginError' => 'Email ou senha incorretos.']);
-        }
-        */
-        $user->last_login = date('Y-m-d H:i:s');
-        $user->save();
-
-        session([
-            'user' =>[
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                
-                ]
-        ]);
-        try {
-                DB::connection()->getPdo();
-                //return "<div>Conexão com o banco de dados bem-sucedida!</div>";
-        } catch (\PDOException $e) {
-            return "<div>Erro ao conectar com o banco de dados: " . $e->getMessage() . "</div>";
-        }
-        return redirect('/');
+    if (!$user || !Hash::check($request->password, $user->password)) {
+        return redirect()->back()->withErrors(['loginError' => 'Email ou senha incorretos.']);
     }
+
+    $user->last_login = now();
+    $user->save();
+
+    session([
+        'user' => [
+            'id'    => $user->id,
+            'name'  => $user->name,
+            'email' => $user->email,
+        ]
+    ]);
+
+    return redirect('/');
+}
     public function logout(){
         session()->forget('user');
         return redirect('/login');
@@ -74,33 +56,29 @@ class AuthController extends Controller
         return Inertia::render('CadastroPage');
     }
     public function cadastroSubmit(Request $request){
-        $request->validate([
-            [
-                'email' => 'required|email',
-                'password' => 'required|confirmed|min:8',
-                //'password_confirmation' => 'required|same:password',
-
+        $request->validate(
+            [   
+                'name'     => 'required|string|max:255',
+                'email'    => 'required|email|unique:users,email',
+                'password' => 'required|confirmed|min:6',
             ],
             [
-                'email.required' => 'O campo do e-mail é obrigatório.',
-                'email.email' => 'O campo do e-mail deve ser um endereço de e-mail válido.',
-                'password.required' => 'O campo da senha é obrigatório.',
-                'password.min' => 'A senha deve conter no mínimo 6 caracteres.',
-                //'password.same' => 'As senhas devem ser iguais.',
-            ],
-            
-
-        ]);
-        $name = $request->input('name');
-        $email = $request->input('email');
-        $password = $request->input('password');
+                'email.required'     => 'O campo do e-mail é obrigatório.',
+                'email.email'        => 'O e-mail deve ser um endereço válido.',
+                'email.unique'       => 'Este e-mail já está cadastrado.',
+                'password.required'  => 'O campo da senha é obrigatório.',
+                'password.min'       => 'A senha deve ter no mínimo 6 caracteres.',
+                'password.confirmed' => 'As senhas não coincidem.',
+            ]
+        );
 
         User::create([
-                'name'        => $name,
-                'email'   => $email,
-                'password' => $password
+                'name'    => $request->name,
+                'email'   => $request->email,
+                'password' => Hash::make($request->password),
         ]);
-        redirect('/login');
+        
+        return redirect('/')->with('success', 'Usuário cadastrado com sucesso');
         
     }
 }
