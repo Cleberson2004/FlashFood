@@ -27,6 +27,14 @@ O projeto foi desenvolvido como parte do meu portfólio para demonstrar a criaç
 
 # Preview da aplicação
 
+## Criação e Login
+
+![Cardápio](screenshots/Login.png)
+![Cardápio](screenshots/Cadastro.png)
+
+Com as atuatenticações principais em uma tela de Login.
+
+---
 ## Cardápio
 
 ![Cardápio](screenshots/ListaCardapio.png)
