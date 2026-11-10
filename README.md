@@ -200,18 +200,6 @@ php artisan serve
 npm run dev
 ```
 
----
-
-# Melhorias futuras
-
-* Dashboard administrativo com métricas de pedidos
-* Sistema de categorias de produtos
-* Upload de imagens para produtos
-* Sistema de avaliações
-* Atualizações de pedidos em tempo real
-
----
-
 # Autor
 
 Cleberson Ribeiro
